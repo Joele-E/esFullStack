@@ -20,13 +20,20 @@ const setupDb = () => {
     satellite_id INT NOT NULL,
     FOREIGN KEY (planet_id) REFERENCES planets (id),
     FOREIGN KEY (satellite_id) REFERENCES satellites (id)
-
   )`);
   // db.none(`INSERT INTO planets (name) VALUES ('terra'), ('marte')`);
   // db.none(`INSERT INTO satellites (name) VALUES ('luna'),('luna2'),('luna3')`);
   const arrPlanets = ["Terra", "Marte"];
   const arrSatellites = ["Luna1", "Luna2", "Luna3"];
-  const data = ["Terra", ["luna1", "luna2"]];
+
+  const mappaPianetiLune = {};
+
+  arrPlanets.forEach((pianeta, index) => {
+    const lune = arrSatellites.slice(index * 2, (index + 1) * 2); // Prendi le due lune per ciascun pianeta
+    mappaPianetiLune[pianeta] = lune;
+  });
+
+  console.log(mappaPianetiLune);
 };
 setupDb();
 console.log(db);

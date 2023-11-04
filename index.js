@@ -26,14 +26,14 @@ const setupDb = () => {
   const arrPlanets = ["Terra", "Marte"];
   const arrSatellites = ["Luna1", "Luna2", "Luna3"];
 
-  const mappaPianetiLune = {};
+  const mapPianetsSatellites = {};
 
   arrPlanets.forEach((pianeta, index) => {
-    const lune = arrSatellites.slice(index * 2, (index + 1) * 2); // Prendi le due lune per ciascun pianeta
-    mappaPianetiLune[pianeta] = lune;
+    const moon = arrSatellites.slice(index * 2, (index + 1) * 2);
+    mapPianetsSatellites[pianeta] = moon;
   });
 
-  console.log(mappaPianetiLune);
+  console.log(mapPianetsSatellites);
 };
 setupDb();
 console.log(db);

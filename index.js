@@ -23,17 +23,42 @@ const setupDb = () => {
   )`);
   // db.none(`INSERT INTO planets (name) VALUES ('terra'), ('marte')`);
   // db.none(`INSERT INTO satellites (name) VALUES ('luna'),('luna2'),('luna3')`);
-  const arrPlanets = ["Terra", "Marte"];
-  const arrSatellites = ["Luna1", "Luna2", "Luna3"];
+  const arrPlanets = ["terra", "marte"];
+  const arrSatellites = ["luna1", "luna2", "luna3"];
+
+  // arrPlanets.forEach(el =>
+  //   db.none(`INSERT INTO planets (name) VALUES ('${el}')`)
+  // );
+
+  arrSatellites.forEach((el) =>
+    db.none(`INSERT INTO satellites (name) VALUES ('${el}')`)
+  );
 
   const mapPianetsSatellites = {};
+
+  const planetsId = [];
+  const satId = [];
 
   arrPlanets.forEach((pianeta, index) => {
     const moon = arrSatellites.slice(index * 2, (index + 1) * 2);
     mapPianetsSatellites[pianeta] = moon;
+    db.oneOrNone(`SELECT id FROM planets WHERE name=$1`, pianeta)
+      .then((res) => {
+        console.log(res);
+        planetsId.push(res);
+      })
+      .catch((err) => console.log(err));
+  });
+  arrSatellites.forEach((sat) => {
+    db.oneOrNone(`SELECT id FROM satellites WHERE name=$1`, sat)
+      .then((res) => {
+        console.log(res);
+        satId.push(res);
+      })
+      .catch((err) => console.log(err));
   });
 
-  console.log(mapPianetsSatellites);
+  // console.log(mapPianetsSatellites);
 };
 setupDb();
 console.log(db);

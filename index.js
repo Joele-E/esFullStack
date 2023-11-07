@@ -42,31 +42,40 @@ const setupDb = () => {
   arrPlanets.forEach((pianeta, index) => {
     const moon = arrSatellites.slice(index * 2, (index + 1) * 2);
     mapPianetsSatellites[pianeta] = moon;
-    let planetId = null;
-    let satelliteId = null;
+    let planetId;
+    let satelliteId;
 
-    db.oneOrNone(`SELECT id FROM planets WHERE name=$1`, pianeta)
-      .then((res) => {
-        console.log(res);
-        planetId = res;
-      })
-      .catch((err) => console.log(err));
-
+    db.oneOrNone(`SELECT id FROM planets WHERE name=$1`, pianeta).then(
+      (res) => {
+        // console.log(res);
+        planetId = res.id;
+        console.log("Pianeti", planetId);
+      }
+    );
     db.oneOrNone(`SELECT id FROM satellites WHERE name=$1`, moon)
       .then((res) => {
-        console.log(res);
-        satelliteId = res;
+        // console.log(res);
+        satelliteId = res.id;
+
+        console.log("Satelliti", satelliteId);
       })
+      .then(() => {
+        db.none(
+          `INSERT INTO planets_satellites (planet_id, satellite_id) VALUES ($1, $2)`,
+          [planetId, satelliteId]
+        );
+      })
+
+      // db.none(
+      //   `UPDATE planets_satellites WHERE (planet_id=$1, satellite_id=$2)  `,
+      //   [planetId, satelliteId]
+      // )
+      //   .then((res) => console.log(res))
+      //   .catch((err) => console.log(err));
+
       .catch((err) => console.log(err));
 
-    if (planetId !== null && satelliteId !== null) {
-      db.none(
-        `INSERT INTO planets_satellites (planet_id, satellite_id) VALUES ($1, $2)`,
-        [planetId, satelliteId]
-      );
-    }
-
-    console.log(planetId);
+    // console.log(planetId);
   });
 
   console.log(mapPianetsSatellites);

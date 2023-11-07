@@ -30,9 +30,9 @@ const setupDb = () => {
   //   db.none(`INSERT INTO planets (name) VALUES ('${el}')`)
   // );
 
-  arrSatellites.forEach((el) =>
-    db.none(`INSERT INTO satellites (name) VALUES ('${el}')`)
-  );
+  // arrSatellites.forEach((el) =>
+  //   db.none(`INSERT INTO satellites (name) VALUES ('${el}')`)
+  // );
 
   const mapPianetsSatellites = {};
 
@@ -42,26 +42,57 @@ const setupDb = () => {
   arrPlanets.forEach((pianeta, index) => {
     const moon = arrSatellites.slice(index * 2, (index + 1) * 2);
     mapPianetsSatellites[pianeta] = moon;
+    let planetId = null;
+    let satelliteId = null;
+
     db.oneOrNone(`SELECT id FROM planets WHERE name=$1`, pianeta)
       .then((res) => {
         console.log(res);
-        planetsId.push(res);
+        planetId = res;
       })
       .catch((err) => console.log(err));
-  });
-  arrSatellites.forEach((sat) => {
-    db.oneOrNone(`SELECT id FROM satellites WHERE name=$1`, sat)
+
+    db.oneOrNone(`SELECT id FROM satellites WHERE name=$1`, moon)
       .then((res) => {
         console.log(res);
-        satId.push(res);
+        satelliteId = res;
       })
       .catch((err) => console.log(err));
+
+    if (planetId !== null && satelliteId !== null) {
+      db.none(
+        `INSERT INTO planets_satellites (planet_id, satellite_id) VALUES ($1, $2)`,
+        [planetId, satelliteId]
+      );
+    }
+
+    console.log(planetId);
   });
+
+  console.log(mapPianetsSatellites);
+  // arrPlanets.forEach((pianeta, index) => {
+  //   const moon = arrSatellites.slice(index * 2, (index + 1) * 2);
+  //   mapPianetsSatellites[pianeta] = moon;
+  //   db.oneOrNone(`SELECT id FROM planets WHERE name=$1`, pianeta)
+  //     .then((res) => {
+  //       console.log(res);
+  //       planetsId.push(res);
+  //     })
+  //     .catch((err) => console.log(err));
+  // });
+  // arrSatellites.forEach((sat) => {
+  //   db.oneOrNone(`SELECT id FROM satellites WHERE name=$1`, sat)
+  //     .then((res) => {
+  //       console.log(res);
+  //       satId.push(res);
+  //     })
+  //     .catch((err) => console.log(err));
+  // });
 
   // console.log(mapPianetsSatellites);
 };
 setupDb();
-console.log(db);
+// console.log(db);
 
 const app = express();
 const port = 3000;
